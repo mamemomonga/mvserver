@@ -1,6 +1,8 @@
 # rpi-volumio-status-led
 
-VolumioにLEDをつけたりなどする
+* Volumio + Raspberry Pi + PCM5102A
+* VolumioにLEDをつけたりなどする
+* 電源コントロール
 
 ## PCM5102Aの接続
 
