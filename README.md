@@ -4,19 +4,18 @@
 * VolumioにLEDをつけたりなどする
 * 電源コントロール
 
-## PCM5102Aの接続
+## DACの接続
 
-![image](images/pcm5102a.png)
+![dac](images/dac.png)
 
-## SN74HC595の接続
+## CONTROLLERの接続
 
-シフトレジスタ、QAからQHまでは、1KΩの抵抗を挟んでLEDと接続
+![controller](images/controller.png)
 
-![image](images/sn74hc595.png)
-![image](images/595chart.png)
+![595chart](images/595chart.png)
 
 ## Raspberry Pi J8 Header
 
-![image](images/pi.png)
+![pi](images/pi.png)
 
 
