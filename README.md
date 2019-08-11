@@ -1,8 +1,6 @@
 # rpi-volumio-status-led
 
-* Volumio + Raspberry Pi + PCM5102A
-* VolumioにLEDをつけたりなどする
-* 電源コントロール
+PCM5102A DACを使用したVolumio Raspberry Pi ネットワークプレイヤー
 
 ## DACの接続
 
@@ -17,5 +15,4 @@
 ## Raspberry Pi J8 Header
 
 ![pi](images/pi.png)
-
 
