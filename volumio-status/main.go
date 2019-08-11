@@ -3,24 +3,24 @@ package main
 import (
 	"encoding/json"
 	leds "github.com/mamemomonga/rpi-go-74hc595led/simple"
+	"github.com/stianeikeland/go-rpio/v4"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
 	"os/signal"
+	"strconv"
 	"strings"
 	"syscall"
 	"time"
-	"strconv"
-	"github.com/stianeikeland/go-rpio/v4"
 	// "github.com/davecgh/go-spew/spew"
 	"os/exec"
 )
 
 var (
-	rate  = 0
-	service = ""
-	playing = false
+	rate         = 0
+	service      = ""
+	playing      = false
 	gpInShutdown rpio.Pin
 )
 
@@ -30,7 +30,7 @@ func main() {
 
 	err := rpio.Open()
 	if err != nil {
-		log.Printf("GPIO Open Failed: %s",err)
+		log.Printf("GPIO Open Failed: %s", err)
 		os.Exit(1)
 	}
 	gpInShutdown = rpio.Pin(5)
@@ -63,9 +63,9 @@ func stdn() {
 	}
 	log.Println("Shutdown Start")
 	leds.AllLow()
-	err := exec.Command("/sbin/shutdown","-h","now").Run()
+	err := exec.Command("/sbin/shutdown", "-h", "now").Run()
 	if err != nil {
-		log.Printf("Shutdown Failed: %s",err)
+		log.Printf("Shutdown Failed: %s", err)
 		return
 	}
 	time.Sleep(time.Minute * 3)
@@ -81,7 +81,7 @@ func hwp() {
 		if playing {
 			log.Printf("STOP\n")
 			setLedRate(-1)
-			rate=0
+			rate = 0
 			playing = false
 		}
 		return
@@ -92,12 +92,12 @@ func hwp() {
 	var rate_new int
 	{
 		rt := strings.Split(hwp["rate"], " ")
-		rate_new,_ = strconv.Atoi(rt[0])
+		rate_new, _ = strconv.Atoi(rt[0])
 	}
 	if rate_new == rate {
 		return
 	}
-	rate=rate_new
+	rate = rate_new
 	log.Printf("Rate: %d\n", rate)
 	switch rate {
 	case 44100:
@@ -119,7 +119,7 @@ func vlmo() {
 		return
 	}
 	service = vm.Service
-	log.Printf("Service: %s",service)
+	log.Printf("Service: %s", service)
 
 	switch service {
 	case "":
