@@ -21,9 +21,11 @@ VolumioにLEDをつけたりなどする
 
 /boot/config.txtに追記してリブート
 
+	# SPIを有効にする
 	dtparam=spi=on
-	dtoverlay=gpio-poweroff,gpiopin=12,active_low="y"
-	dtoverlay=gpio-shutdown,gpio_pin=16
+	
+	# パワーオフ状態でなければ、GPIO22をHIGHにする
+	dtoverlay=gpio-poweroff,gpiopin=22,active_low="y"
 
 SPIの確認
 
