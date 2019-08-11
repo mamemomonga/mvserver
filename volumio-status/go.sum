@@ -2,3 +2,5 @@ github.com/janne/bcm2835 v0.0.0-20180618143247-88812525bb36 h1:xFT4w0fDGp7tfeK8r
 github.com/janne/bcm2835 v0.0.0-20180618143247-88812525bb36/go.mod h1:VrIKCut7H2DtI/MpVa0JETr9lsgzgJrvFIBJRPKyYxw=
 github.com/mamemomonga/rpi-go-74hc595led v0.0.0-20190811020130-08b1d369830c h1:viceKo/rhd2+AsxlyhOJ6xmEKf6FDBf+dXatp1s0q7Q=
 github.com/mamemomonga/rpi-go-74hc595led v0.0.0-20190811020130-08b1d369830c/go.mod h1:b+VxZWeeqW8W3XgFzwFmTSS7R2/T8+zho8mabNdSEeg=
+github.com/stianeikeland/go-rpio/v4 v4.4.0 h1:LScvNyXHF412co42LG5t7bvBDbtDAhLF828ebaGqmjA=
+github.com/stianeikeland/go-rpio/v4 v4.4.0/go.mod h1:BkK52zk+FRk8wCTDf88/86Sojc+NfUiCAHd1ZV3RuTM=

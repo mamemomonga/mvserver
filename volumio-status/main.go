@@ -12,18 +12,29 @@ import (
 	"syscall"
 	"time"
 	"strconv"
+	"github.com/stianeikeland/go-rpio/v4"
 	// "github.com/davecgh/go-spew/spew"
+	"os/exec"
 )
 
 var (
 	rate  = 0
 	service = ""
 	playing = false
+	gpInShutdown rpio.Pin
 )
 
 func main() {
 	leds.Start(1)
 	defer leds.Finalize()
+
+	err := rpio.Open()
+	if err != nil {
+		log.Printf("GPIO Open Failed: %s",err)
+		os.Exit(1)
+	}
+	gpInShutdown = rpio.Pin(5)
+	gpInShutdown.PullUp()
 
 	quit := make(chan os.Signal)
 	signal.Notify(quit, syscall.SIGHUP, syscall.SIGINT)
@@ -35,18 +46,29 @@ func main() {
 
 	go func() {
 		for {
-			do_update()
+			hwp()
+			vlmo()
+			stdn()
 			time.Sleep(time.Second)
 		}
 	}()
-
 	<-quit
 	leds.AllLow()
 }
 
-func do_update() {
-	hwp()
-	vlmo()
+func stdn() {
+	btn := gpInShutdown.Read()
+	if btn != 0 {
+		return
+	}
+	log.Println("Shutdown Start")
+	leds.AllLow()
+	err := exec.Command("/sbin/shutdown","-h","now").Run()
+	if err != nil {
+		log.Printf("Shutdown Failed: %s",err)
+		return
+	}
+	time.Sleep(time.Minute * 3)
 }
 
 func hwp() {
