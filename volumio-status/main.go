@@ -16,10 +16,8 @@ import (
 )
 
 var (
-	format  = "DUMMY"
-	rate    = ""
+	rate  = 0
 	service = ""
-	update  = false
 	playing = false
 )
 
@@ -47,8 +45,13 @@ func main() {
 }
 
 func do_update() {
+	hwp()
+	vlmo()
+}
+
+func hwp() {
 	hwp := hw_params()
-	if _, ok := hwp["format"]; ok {
+	if _, ok := hwp["rate"]; ok {
 		if !playing {
 			playing = true
 		}
@@ -56,49 +59,49 @@ func do_update() {
 		if playing {
 			log.Printf("STOP\n")
 			setLedRate(-1)
-			setLedService(-1)
-			format = ""
-			service = ""
+			rate=0
 			playing = false
 		}
 		return
 	}
-	vm := getVolumioState()
-
-	if hwp["format"] != format {
-		format = hwp["format"]
-		update = true
-	}
-	if hwp["rate"] != rate {
-		rate = hwp["rate"]
-		update = true
-	}
-	if vm.Service != service {
-		service = vm.Service
-		update = true
-	}
-	if !update {
+	if !playing {
 		return
 	}
-
-	rates := strings.Split(rate, " ")
-	ratenum, _ := strconv.Atoi(rates[0])
-
-	log.Printf("PLAY Format: %s | Rate: %d | Service %s\n", format, ratenum, service)
-	switch ratenum {
+	var rate_new int
+	{
+		rt := strings.Split(hwp["rate"], " ")
+		rate_new,_ = strconv.Atoi(rt[0])
+	}
+	if rate_new == rate {
+		return
+	}
+	rate=rate_new
+	log.Printf("Rate: %d\n", rate)
+	switch rate {
 	case 44100:
 		setLedRate(0)
 	case 48000:
 		setLedRate(1)
 	default:
-		if ratenum >= 96000 {
+		if rate >= 96000 {
 			setLedRate(2)
 		} else {
 			setLedRate(3)
 		}
 	}
+}
+
+func vlmo() {
+	vm := getVolumioState()
+	if vm.Service == service {
+		return
+	}
+	service = vm.Service
+	log.Printf("Service: %s",service)
 
 	switch service {
+	case "":
+		setLedService(-1)
 	case "mpd":
 		setLedService(4)
 	case "volspotconnect2":
@@ -108,7 +111,6 @@ func do_update() {
 	default:
 		setLedService(7)
 	}
-	update = false
 }
 
 func setLedRate(led int) {

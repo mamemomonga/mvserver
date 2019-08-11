@@ -4,25 +4,25 @@ package main
 
 type VolumioAPIGetState struct {
 	Status               string      `json:"status"`
-	Position             int         `json:"position"`
-	Title                string      `json:"title"`
-	Artist               string      `json:"artist"`
-	Album                string      `json:"album"`
-	Albumart             string      `json:"albumart"`
-	URI                  string      `json:"uri"`
-	TrackType            string      `json:"trackType"`
-	Seek                 int         `json:"seek"`
-	Duration             int         `json:"duration"`
-	Samplerate           string      `json:"samplerate"`
-	Bitdepth             string      `json:"bitdepth"`
-	Channels             int         `json:"channels"`
-	RepeatSingle         bool        `json:"repeatSingle"`
-	Consume              bool        `json:"consume"`
+	Position             interface{} `json:"position"`
+	Title                interface{} `json:"title"`
+	Artist               interface{} `json:"artist"`
+	Album                interface{} `json:"album"`
+	Albumart             interface{} `json:"albumart"`
+	URI                  interface{} `json:"uri"`
+	TrackType            interface{} `json:"trackType"`
+	Seek                 interface{} `json:"seek"`
+	Duration             interface{} `json:"duration"`
+	Samplerate           interface{} `json:"samplerate"`
+	Bitdepth             interface{} `json:"bitdepth"`
+	Channels             interface{} `json:"channels"`
+	RepeatSingle         interface{} `json:"repeatSingle"`
+	Consume              interface{} `json:"consume"`
 	Volume               interface{} `json:"volume"`
-	DisableVolumeControl bool        `json:"disableVolumeControl"`
-	Mute                 bool        `json:"mute"`
+	DisableVolumeControl interface{} `json:"disableVolumeControl"`
+	Mute                 interface{} `json:"mute"`
 	Stream               interface{} `json:"stream"`
-	Updatedb             bool        `json:"updatedb"`
-	Volatile             bool        `json:"volatile"`
+	Updatedb             interface{} `json:"updatedb"`
+	Volatile             interface{} `json:"volatile"`
 	Service              string      `json:"service"`
 }
