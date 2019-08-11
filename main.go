@@ -11,6 +11,7 @@ import (
 	"strings"
 	"syscall"
 	"time"
+	"strconv"
 	// "github.com/davecgh/go-spew/spew"
 )
 
@@ -72,28 +73,29 @@ func do_update() {
 		rate = hwp["rate"]
 		update = true
 	}
-	if playing {
-		if vm.Service != service {
-			service = vm.Service
-			update = true
-		}
+	if vm.Service != service {
+		service = vm.Service
+		update = true
 	}
-
 	if !update {
 		return
 	}
 
 	rates := strings.Split(rate, " ")
-	log.Printf("PLAY Format: %s | Rate: %s | Service %s\n", format, rates[0], service)
-	switch rates[0] {
-	case "44100":
+	ratenum, _ := strconv.Atoi(rates[0])
+
+	log.Printf("PLAY Format: %s | Rate: %s | Service %s\n", format, ratenum, service)
+	switch ratenum {
+	case 44100:
 		setLedRate(0)
-	case "48000":
+	case 48000:
 		setLedRate(1)
-	case "96000":
-		setLedRate(2)
 	default:
-		setLedRate(3)
+		if ratenum >= 96000 {
+			setLedRate(2)
+		} else {
+			setLedRate(3)
+		}
 	}
 
 	switch service {
