@@ -26,4 +26,3 @@ type VolumioAPIGetState struct {
 	Volatile             bool        `json:"volatile"`
 	Service              string      `json:"service"`
 }
-

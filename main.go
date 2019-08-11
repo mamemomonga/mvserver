@@ -1,16 +1,16 @@
 package main
 
 import (
-	"os"
+	"encoding/json"
+	leds "github.com/mamemomonga/rpi-go-74hc595led/simple"
 	"io/ioutil"
 	"log"
-	"strings"
-	"time"
-	leds "github.com/mamemomonga/rpi-go-74hc595led/simple"
 	"net/http"
+	"os"
 	"os/signal"
+	"strings"
 	"syscall"
-	"encoding/json"
+	"time"
 	// "github.com/davecgh/go-spew/spew"
 )
 
@@ -46,8 +46,8 @@ func main() {
 }
 
 func do_update() {
-	hwp:=hw_params()
-	if _,ok := hwp["format"]; ok {
+	hwp := hw_params()
+	if _, ok := hwp["format"]; ok {
 		if !playing {
 			playing = true
 		}
@@ -83,9 +83,9 @@ func do_update() {
 		return
 	}
 
-	rates := strings.Split(rate," ")
-	log.Printf("PLAY Format: %s | Rate: %s | Service %s\n",format, rates[0], service)
-	switch(rates[0]) {
+	rates := strings.Split(rate, " ")
+	log.Printf("PLAY Format: %s | Rate: %s | Service %s\n", format, rates[0], service)
+	switch rates[0] {
 	case "44100":
 		setLedRate(0)
 	case "48000":
@@ -96,7 +96,7 @@ func do_update() {
 		setLedRate(3)
 	}
 
-	switch(service) {
+	switch service {
 	case "mpd":
 		setLedService(4)
 	case "volspotconnect2":
@@ -110,21 +110,21 @@ func do_update() {
 }
 
 func setLedRate(led int) {
-	for i:=uint8(0); i<=3; i++ {
-		if i==uint8(led) {
-			leds.Set(0,i,1)
+	for i := uint8(0); i <= 3; i++ {
+		if i == uint8(led) {
+			leds.Set(0, i, 1)
 		} else {
-			leds.Set(0,i,0)
+			leds.Set(0, i, 0)
 		}
 	}
 }
 
 func setLedService(led int) {
-	for i:=uint8(4); i<=7; i++ {
-		if i==uint8(led) {
-			leds.Set(0,i,1)
+	for i := uint8(4); i <= 7; i++ {
+		if i == uint8(led) {
+			leds.Set(0, i, 1)
 		} else {
-			leds.Set(0,i,0)
+			leds.Set(0, i, 0)
 		}
 	}
 }
@@ -137,11 +137,11 @@ func getVolumioState() (data VolumioAPIGetState) {
 	}
 	res, err := client.Get("http://localhost:3000/api/v1/getState")
 	if err != nil {
-		log.Printf("Error: %s",err)
+		log.Printf("Error: %s", err)
 		return
 	}
 	if res.StatusCode != 200 {
-		log.Printf("StatusCode: %d",res.StatusCode)
+		log.Printf("StatusCode: %d", res.StatusCode)
 		return
 	}
 	b, _ := ioutil.ReadAll(res.Body)
@@ -154,21 +154,20 @@ func getVolumioState() (data VolumioAPIGetState) {
 }
 
 func hw_params() (m map[string]string) {
-    m = make(map[string]string)
-	f,err := os.Open("/proc/asound/sndrpihifiberry/pcm0p/sub0/hw_params")
+	m = make(map[string]string)
+	f, err := os.Open("/proc/asound/sndrpihifiberry/pcm0p/sub0/hw_params")
 	if err != nil {
 		return
 	}
 	defer f.Close()
-	b,err := ioutil.ReadAll(f)
+	b, err := ioutil.ReadAll(f)
 	if string(b) == "closed\n" {
 		return
 	}
-	items := strings.FieldsFunc(string(b),func(c rune) bool { return c == 10 })
+	items := strings.FieldsFunc(string(b), func(c rune) bool { return c == 10 })
 	for _, item := range items {
 		x := strings.Split(item, ": ")
 		m[x[0]] = x[1]
 	}
 	return
 }
-
