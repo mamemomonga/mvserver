@@ -1,4 +1,7 @@
-# サブコンとローラ 
+# サブコントローラ
+
+* BCK信号があるときLEDを点灯させる
+* Piが起動していないとき、ボタンでRaspberry Piリセット(起動)信号を送る
 
 * ATMEL(microchip) ATtiny13A
 * AVRISPmk2
