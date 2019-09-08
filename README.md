@@ -6,11 +6,9 @@ PCM5102A DACを使用したVolumio Raspberry Pi ネットワークプレイヤ�
 
 ![dac](images/dac.png)
 
-## CONTROLLERの接続
+## 電源コントローラ
 
-![controller](images/controller.png)
-
-![595chart](images/595chart.png)
+![power controller](images/pwrctl.png)
 
 ## Raspberry Pi J8 Header
 
