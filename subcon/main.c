@@ -38,6 +38,8 @@
 #define FALSE 0
 #define TRUE  1
 
+#define nop() __asm__ __volatile__ ("nop")
+
 void blink_fast(uint8_t count);
 void fadein();
 void fadeout();
@@ -56,7 +58,7 @@ int main(void) {
 	led_state=FALSE;
 
 	blink_fast(5);
-	_delay_ms(500);
+	_delay_ms(1000);
 
     for(;;){
 		uint8_t count=0;
@@ -95,22 +97,27 @@ void fadein() {
 		return;
 	}
 	led_state=TRUE;
-	for(uint8_t i=0;i<255;i++) {
-		for(uint8_t j=0;i<255;i++) {
-			if(i>=j) {
-				LED1_H;
-			} else {
-				LED1_L;
-			}
-		}
-	}
+	fade(1);
 	LED1_H;
 }
 void fadeout() {
 	if(!led_state) {
 		return;
 	}
-	LED1_L;
 	led_state=FALSE;
+	fade(0);
+	LED1_L;
 }
 
+void fade(uint8_t type) {
+	for(uint8_t i=0; i<255; i++) {
+		for(uint8_t j=0; j<255; j++) {
+			if(i>=j) {
+				if(type) { LED1_H; } else { LED1_L; }
+			} else {
+				if(type) { LED1_L; } else { LED1_H; }
+			}
+			for(uint8_t k=0;k<10;k++) { nop(); }
+		}
+	}
+}
