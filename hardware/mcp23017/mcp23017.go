@@ -6,11 +6,12 @@ import (
 
 const (
 	I2CAddr int = 0x20
-	Debug bool = true
 )
 
 type MCP23017 struct {
-	dev bus
+	dev    bus
+	StateA  byte
+	StateB  byte
 }
 
 type bus interface {
@@ -21,17 +22,19 @@ type bus interface {
 func New(dev bus) *MCP23017 {
 	t := new(MCP23017)
 	t.dev=dev
+	t.StateA = 0
+	t.StateB = 0
 	return t
 }
 
-func (t *MCP23017) Write(addr uint8, data uint8) {
+func (t *MCP23017) write(addr uint8, data uint8) {
 	err := t.dev.WriteReg(addr, []byte{data})
 	if err != nil {
 		log.Fatal(err)
 	}
 }
 
-func (t *MCP23017) Read(addr uint8) byte {
+func (t *MCP23017) read(addr uint8) byte {
 	v := make([]byte, 1,1)
 	err := t.dev.ReadReg(addr,v)
 	if err != nil {
@@ -46,9 +49,6 @@ func (t *MCP23017) S2BV(in []uint8) uint8 {
 	var i uint8
 	for i = 0; i < 8; i++ {
 		v = v | (in[i] << i)
-	}
-	if Debug {
-		log.Printf("BV: 0x%02X\n", v)
 	}
 	return v
 }
@@ -82,27 +82,63 @@ func (t *MCP23017) Byte(b0, b1, b2, b3, b4, b5, b6, b7 uint8) []uint8 {
 // ICON.BANK=0 専用
 
 func (t *MCP23017) DirectionA(v ...uint8) {
-	t.Write(0x00, t.S2BV(v)) // IODIRA
+	t.write(0x00, t.S2BV(v)) // IODIRA
 }
 func (t *MCP23017) DirectionB(v ...uint8) {
-	t.Write(0x01, t.S2BV(v)) // IODIRB
+	t.write(0x01, t.S2BV(v)) // IODIRB
 }
-func (t *MCP23017) LatchA(v []uint8) {
-	t.Write(0x14, t.S2BV(v)) // OLATA
+func (t *MCP23017) PullUpA(v ...uint8) {
+	t.write(0x0c, t.S2BV(v)) // GPPUA
 }
-func (t *MCP23017) LatchB(v []uint8) {
-	t.Write(0x15, t.S2BV(v)) // OLATB
+func (t *MCP23017) PullUpB(v ...uint8) {
+	t.write(0x0d, t.S2BV(v)) // GPPUB
 }
-func (t *MCP23017) PullUpA(v []uint8) {
-	t.Write(0x0c, t.S2BV(v)) // GPPUA
+func (t *MCP23017) ApplyA() {
+	t.write(0x14, t.StateA) // OLATA
 }
-func (t *MCP23017) PullUpB(v []uint8) {
-	t.Write(0x0d, t.S2BV(v)) // GPPUB
+func (t *MCP23017) ApplyB() {
+	t.write(0x15, t.StateB) // OLATB
 }
-func (t *MCP23017) GpioA() (v []uint8) {
-	return t.BV2S(t.Read(0x12)) // GPIOA
+func (t *MCP23017) FetchA() {
+	t.StateA = t.read(0x12) // GPIOA
 }
-func (t *MCP23017) GpioB() (v []uint8) {
-	return t.BV2S(t.Read(0x13)) // GPIOB
+func (t *MCP23017) FetchB() {
+	t.StateB = t.read(0x13) // GPIOB
 }
 
+func (t *MCP23017) SetA(p byte, v,a bool) {
+	if v {
+		t.StateA = t.StateA |  ( 1 << p )
+	} else {
+		t.StateA = t.StateA &^ ( 1 << p )
+	}
+	if a {
+		t.ApplyA()
+	}
+}
+
+func (t *MCP23017) SetB(p byte, v,a bool) {
+	if v {
+		t.StateB = t.StateB |  ( 1 << p )
+	} else {
+		t.StateB = t.StateB &^ ( 1 << p )
+	}
+	if a {
+		t.ApplyB()
+	}
+}
+
+func (t *MCP23017) GetA(p byte) bool {
+	if t.StateA & ( 1 << p ) > 0 {
+		return true
+	} else {
+		return false
+	}
+}
+func (t *MCP23017) GetB(p byte) bool {
+	if t.StateB & ( 1 << p ) > 0 {
+		return true
+	} else {
+		return false
+	}
+}

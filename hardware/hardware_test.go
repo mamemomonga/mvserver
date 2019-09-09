@@ -1,7 +1,7 @@
 package hardware_test
 
 // TestHelloだけキャッシュなしで実行
-// go test -v --count=1 -run TestHello
+// go test -v --count=1 -run TestMCP23017
 
 import (
 	"time"
@@ -18,46 +18,38 @@ func TestInit(t *testing.T) {
 	}
 }
 
-func Test01(t *testing.T) {
+func TestMCP23017(t *testing.T) {
+
 	hdwr := hardware.New()
 	err := hdwr.Init()
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	hdwr.MCP23017.Write(0x00, 0x00) // IOIRA
-	hdwr.MCP23017.Write(0x14, 0xFF) // OLATA
-	time.Sleep( 1 * time.Second )
-	hdwr.MCP23017.Write(0x14, 0x00) // OLATA
+	m := hdwr.MCP23017
 
-	hdwr.MCP23017.Write(0x00, 0x01) // IOIRB
+	m.DirectionA(0,0,0,0,0,0,0,0)
+	m.DirectionB(1,1,1,1,1,1,1,1)
 
-	log.Printf("GPIOB %#v\n",hdwr.MCP23017.Read(0x13) ) // GPIOB
+	m.StateA = 0xFF
+	m.ApplyA()
+	time.Sleep( time.Second )
+	m.StateA = 0x00
+	m.ApplyA()
+	time.Sleep( time.Second )
 
-	if err != nil {
-		t.Fatal(err)
-	}
-}
-
-func Test02(t *testing.T) {
-	hdwr := hardware.New()
-	err := hdwr.Init()
-	if err != nil {
-		t.Fatal(err)
+	m.FetchB()
+	if m.GetB(0) {
+		log.Println("StateB Pin0: High")
+	} else {
+		log.Println("StateB Pin0: Low")
 	}
 
-	hdwr.MCP23017.DirectionA(0,0,0,0,0,0,0,0)
-	hdwr.MCP23017.DirectionB(1,1,1,1,1,1,1,1)
-
-	hdwr.MCP23017.LatchA(hdwr.MCP23017.AllHigh())
-	time.Sleep( 1 * time.Second )
-	hdwr.MCP23017.LatchA(hdwr.MCP23017.AllLow())
-
-
-
-
-	if err != nil {
-		t.Fatal(err)
+	for i := byte(0); i<8; i++ {
+		m.SetA(i,true, true)
+		time.Sleep( 250 * time.Millisecond )
+		m.SetA(i,false, true)
 	}
+
 }
 
