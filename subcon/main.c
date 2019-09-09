@@ -35,6 +35,15 @@
 #define BTN_INIT { DDRB &=~ BTN; PORTB |= BTN; }
 #define BTN_IS_H ( PINB & BTN )
 
+#define FALSE 0
+#define TRUE  1
+
+void blink_fast(uint8_t count);
+void fadein();
+void fadeout();
+
+uint8_t led_state;
+
 int main(void) {
 	BCK_INIT;
 	PON_INIT;
@@ -44,26 +53,64 @@ int main(void) {
 	LED1_INIT;
 	LED1_L;
 
+	led_state=FALSE;
+
+	blink_fast(5);
+	_delay_ms(500);
+
     for(;;){
 		uint8_t count=0;
-		uint8_t i;
-		for(i=0; i< 255; i++) {
+		for(uint8_t i=0; i< 255; i++) {
 			if(!BCK_IS_H) {
 				count++;
 			}
 		}
 		if(count>0) {
-			LED1_H;
+			fadein();
 		} else {
-			LED1_L;
+			fadeout();
 		}
-		if(!PON_IS_H) {
-			if(!BTN_IS_H) {
+		if(!BTN_IS_H) {
+			if(!PON_IS_H) {
 				PRST_L;
-				_delay_ms(500);
+				_delay_ms(100);
 				PRST_H;
 			}
 		}
     }
     return 0;
 }
+
+void blink_fast(uint8_t count) {
+	for(uint8_t i=0; i<count; i++) {
+		LED1_H;
+		_delay_ms(50);
+		LED1_L;
+		_delay_ms(50);
+	}
+}
+
+void fadein() {
+	if(led_state) {
+		return;
+	}
+	led_state=TRUE;
+	for(uint8_t i=0;i<255;i++) {
+		for(uint8_t j=0;i<255;i++) {
+			if(i>=j) {
+				LED1_H;
+			} else {
+				LED1_L;
+			}
+		}
+	}
+	LED1_H;
+}
+void fadeout() {
+	if(!led_state) {
+		return;
+	}
+	LED1_L;
+	led_state=FALSE;
+}
+
