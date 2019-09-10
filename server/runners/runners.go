@@ -26,8 +26,8 @@ func (t *Runners) Run() {
 
 	// 停止調停が必要なゴルーチン
 	t.runner = [...]*runner{
-		NewRunner("led", t),
 		NewRunner("bme280", t),
+		NewRunner("volumio-state", t),
 	}
 	for i := 0; i < len(t.runner); i++ {
 		go t.runner[i].Run()
@@ -44,6 +44,7 @@ func (t *Runners) Stop() {
 	for i := 0; i < len(t.runner); i++ {
 		select {
 		case <-t.runner[i].Done:
+			log.Printf("%d",i)
 		}
 	}
 	log.Println("All Done!")

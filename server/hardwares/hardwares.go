@@ -15,12 +15,20 @@ import (
 )
 
 type Hardwares struct {
-	i2c      i2c.BusCloser
-	Env      *bme280.BME280
-	Ex1      *mcp23017.MCP23017
-	BtnInt   gpio.PinIO
-	Shutdown gpio.PinIO
-	Led1     *mcp23017.PinT
+	i2c        i2c.BusCloser
+	Env        *bme280.BME280
+	Ex1        *mcp23017.MCP23017
+	BtnInt     gpio.PinIO
+	Shutdown   gpio.PinIO
+
+	LedRunning *mcp23017.PinT
+	LedSpotify *mcp23017.PinT
+	LedHiRez   *mcp23017.PinT
+	Led4       *mcp23017.PinT
+	Led5       *mcp23017.PinT
+	Led6       *mcp23017.PinT
+	Led7       *mcp23017.PinT
+	Led8       *mcp23017.PinT
 }
 
 func New() *Hardwares {
@@ -63,7 +71,14 @@ func (t *Hardwares) Init() (err error) {
 		return err
 	}
 
-	t.Led1 = mcp23017.NewPin(t.Ex1.A, 0)
+	t.LedRunning = mcp23017.NewPin(t.Ex1.A, 7)
+	t.LedSpotify = mcp23017.NewPin(t.Ex1.A, 6)
+	t.LedHiRez   = mcp23017.NewPin(t.Ex1.A, 5)
+	t.Led4       = mcp23017.NewPin(t.Ex1.A, 4)
+	t.Led5       = mcp23017.NewPin(t.Ex1.A, 3)
+	t.Led6       = mcp23017.NewPin(t.Ex1.A, 2)
+	t.Led7       = mcp23017.NewPin(t.Ex1.A, 1)
+	t.Led8       = mcp23017.NewPin(t.Ex1.A, 0)
 
 	time.Sleep(time.Second)
 	t.Ex1.A.SetAllLow().Apply()

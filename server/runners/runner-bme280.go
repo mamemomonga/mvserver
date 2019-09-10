@@ -7,7 +7,7 @@ import (
 )
 
 func (t *runner) bme280() {
-	ticker := time.NewTicker(1 * time.Second)
+	ticker := time.NewTicker(30 * time.Second)
 	bme := t.p.hw.Env
 	for {
 		err := bme.Sense()

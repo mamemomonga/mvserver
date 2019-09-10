@@ -19,10 +19,9 @@ func NewRunner(name string, p *Runners) *runner {
 
 func (t *runner) Run() {
 	switch t.name {
-	case "led":
-		t.led()
-	case "bme280":
-		t.bme280()
+	case "led":    t.led()
+	case "bme280": t.bme280()
+	case "volumio-state": t.volumioState()
 	}
 	t.Done <- true
 }
