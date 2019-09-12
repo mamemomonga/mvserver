@@ -3,7 +3,6 @@ package runners
 import (
 	"context"
 	"github.com/mamemomonga/rpi-volumio-status-led/server/hardwares"
-	"log"
 )
 
 type Runners struct {
@@ -11,7 +10,6 @@ type Runners struct {
 	ctx         context.Context
 	cancel      context.CancelFunc
 	RunnersDone chan bool
-	runner      [2]*runner
 }
 
 func New(hw *hardwares.Hardwares) *Runners {
@@ -23,30 +21,13 @@ func New(hw *hardwares.Hardwares) *Runners {
 }
 
 func (t *Runners) Run() {
-
-	// 停止調停が必要なゴルーチン
-	t.runner = [...]*runner{
-		NewRunner("bme280", t),
-		NewRunner("volumio-state", t),
-	}
-	for i := 0; i < len(t.runner); i++ {
-		go t.runner[i].Run()
-	}
-
-	// 停止調停が不要なゴルーチン
+	go t.runBME280()
+	go t.runVolumioState()
 	go t.runButtonPushed()
 	go t.runWaitShutdown()
 }
 
 func (t *Runners) Stop() {
 	t.cancel()
-	log.Println("Wait")
-	for i := 0; i < len(t.runner); i++ {
-		select {
-		case <-t.runner[i].Done:
-			log.Printf("%d",i)
-		}
-	}
-	log.Println("All Done!")
 	t.RunnersDone <- true
 }

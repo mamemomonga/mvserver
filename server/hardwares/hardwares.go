@@ -21,10 +21,10 @@ type Hardwares struct {
 	BtnInt     gpio.PinIO
 	Shutdown   gpio.PinIO
 
-	LedRunning *mcp23017.PinT
-	LedSpotify *mcp23017.PinT
+	LedEnable  *mcp23017.PinT
+	LedPlaying *mcp23017.PinT
 	LedHiRez   *mcp23017.PinT
-	Led4       *mcp23017.PinT
+	LedProc    *mcp23017.PinT
 	Led5       *mcp23017.PinT
 	Led6       *mcp23017.PinT
 	Led7       *mcp23017.PinT
@@ -71,10 +71,10 @@ func (t *Hardwares) Init() (err error) {
 		return err
 	}
 
-	t.LedRunning = mcp23017.NewPin(t.Ex1.A, 7)
-	t.LedSpotify = mcp23017.NewPin(t.Ex1.A, 6)
+	t.LedEnable  = mcp23017.NewPin(t.Ex1.A, 7)
+	t.LedPlaying = mcp23017.NewPin(t.Ex1.A, 6)
 	t.LedHiRez   = mcp23017.NewPin(t.Ex1.A, 5)
-	t.Led4       = mcp23017.NewPin(t.Ex1.A, 4)
+	t.LedProc    = mcp23017.NewPin(t.Ex1.A, 4)
 	t.Led5       = mcp23017.NewPin(t.Ex1.A, 3)
 	t.Led6       = mcp23017.NewPin(t.Ex1.A, 2)
 	t.Led7       = mcp23017.NewPin(t.Ex1.A, 1)
